@@ -2,7 +2,7 @@ import pg from 'pg';
 const { Pool } = pg;
 
 const pool = new Pool({
-    connectionString: "postgres://postgres:abbos@localhost:5432/node-bot"
+    connectionString: "postgres://postgres:abbos@localhost:5432/telegrambot"
 })
 
 export const fetchData = async(SQL, ...params) => {

@@ -1,4 +1,5 @@
 import bot from "../config/bot.config.js";
+import { GETALLJOBS } from "../query/job.query.js";
 import { fetchData } from "../utils/postgres.js";
 
 const register = bot.onText(/\/start/, (msg) => {
@@ -23,26 +24,24 @@ const register = bot.onText(/\/start/, (msg) => {
     }
 })
 
-const checkJob = bot.on('callback_query', (msg) => {
+const checkJob = bot.on('callback_query', async(msg) => {
     try {
         const chatid = msg.message.chat.id
+        const allJobs = await fetchData(GETALLJOBS)
+        const arrJobs = []
+        for (let val of allJobs) {
+            let toArray = [{ text: val.job_title, callback_data: val.job_id }]
+            console.log(toArray);
+            arrJobs.push(toArray)
+        }
 
         switch (msg.data) {
             case 'worker':
-                bot.sendMessage(chatid, 'do you want to register?', {
-                    reply_markup: {
-                        inline_keyboard: [
-                            // [{
-                            //     text: "Register",
-                            //     callback_data: "register",
-                            // }],
-                            // [{
-                            //     text: "Back <-",
-                            //     callback_data: "back",
-                            // }],
-                        ],
+                bot.sendMessage(chatid, 'Kasbingizni tanlang', {
+                    reply_markup: JSON.stringify({
+                        inline_keyboard: arrJobs,
                         resize_keyboard: true,
-                    },
+                    })
                 })
         }
     } catch (error) {
