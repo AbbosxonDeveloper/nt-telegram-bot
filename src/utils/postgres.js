@@ -1,8 +1,14 @@
 import pg from 'pg';
 const { Pool } = pg;
 
+
+import { config } from 'dotenv';
+config()
+
+
+
 const pool = new Pool({
-    connectionString: "postgres://postgres:abbos@localhost:5432/telegrambot"
+    connectionString: process.env.CONNECTIONSTRING || "postgres://postgres:abbos@localhost:5432/telegrambot"
 })
 
 export const fetchData = async(SQL, ...params) => {
