@@ -34,15 +34,26 @@ const checkJob = bot.on('callback_query', async(msg) => {
             console.log(toArray);
             arrJobs.push(toArray)
         }
-
         switch (msg.data) {
             case 'worker':
+                if (arrJobs.length >= 3) {
+                    arrJobs.length = 4
+                    arrJobs.push([{ text: "...", callback_data: "other_jobs" }])
+                }
                 bot.sendMessage(chatid, 'Kasbingizni tanlang', {
                     reply_markup: JSON.stringify({
                         inline_keyboard: arrJobs,
                         resize_keyboard: true,
                     })
                 })
+            case 'other_jobs':
+                bot.sendMessage(chatid, 'Kasbingizni tanlang', {
+                    reply_markup: JSON.stringify({
+                        inline_keyboard: arrJobs,
+                        resize_keyboard: true,
+                    })
+                })
+
         }
     } catch (error) {
         console.log(error);
@@ -73,7 +84,6 @@ const checkRegister = bot.on('callback_query', (msg) => {
 
             case 'register':
                 bot.sendMessage(chatid, 'ismingizni kiriting. \n masalan: Ali Valiyev')
-
 
             default:
                 break;
