@@ -3,14 +3,15 @@ CREATE DATABASE node-bot;
 CREATE extension "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS worker (
-    worker_id int,
+    worker_id varchar unique,
     worker_name varchar,
     worker_phone varchar(99),
     worker_place varchar(40),
     address varchar(118),
     target varchar(125),
     starts varchar(10),
-    ends varchar(10)
+    ends varchar(10),
+    accept_id varchar unique
 );
 
 CREATE TABLE IF NOT EXISTS jobs (
