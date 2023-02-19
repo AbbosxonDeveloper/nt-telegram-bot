@@ -4,5 +4,5 @@ export default bot.setMyCommands(
     [{
         command: "/start",
         description: "start using bot"
-    }]
+    }],
 )

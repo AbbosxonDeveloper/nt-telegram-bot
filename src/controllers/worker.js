@@ -2,6 +2,9 @@ import bot from "../config/bot.config.js";
 import { GETALLJOBS } from "../query/job.query.js";
 import { ADDWORKERID, CANCEL_WORKER, EXISTINGWORKER, EXISTINGWORKERID, REGISTERWORKER } from "../query/worker.query.js";
 import { fetchData } from "../utils/postgres.js";
+import { config } from "dotenv";
+config()
+const AdminID = process.env.ADMIN_ID
 
 const register = bot.onText(/\/start/, async(msg) => {
     try {
@@ -69,7 +72,7 @@ const selectJob = bot.on('callback_query', async(msg) => {
 const showRegistration = bot.on('callback_query', (msg) => {
     try {
         const chatid = msg.message.chat.id
-        console.log(msg);
+            // console.log(msg);
         switch (msg.data) {
             case 'jobs':
                 bot.sendMessage(chatid, 'do you want to register?', {
@@ -98,68 +101,39 @@ const showRegistration = bot.on('callback_query', (msg) => {
     }
 })
 
-const startRegister = bot.on('callback_query', async(msg) => {
-    try {
-        console.log('dddddddddddddddddddddddd', msg.data);
-        const chatid = msg.message.chat.id
 
+const onRegister = bot.on('callback_query', msg => {
+    try {
+        const chatid = msg.message.chat.id
         switch (msg.data) {
-            case 'register':
-                let registerWorker = await fetchData(ADDWORKERID, msg.message.chat.id)
-                console.log(registerWorker);
-                bot.sendMessage(chatid, 'ismingizni kiriting. \n masalan: Ali Valiyev')
-                bot.on('message', m => {
-                    bot.sendMessage(chatid, 'keyingi bosqich: endi telefon raqamni kiriting', {
-                        reply_markup: {
-                            inline_keyboard: [
-                                [{
-                                    text: "Back <-",
-                                    callback_data: "back",
-                                }],
-                            ],
-                            resize_keyboard: true,
-                        },
-                    })
-                    bot.on('message', () => {
-                        bot.sendMessage(chatid, 'keyingi bosqich: Ustaxona nomini kiriting', {
-                            reply_markup: {
-                                inline_keyboard: [
-                                    [{
-                                        text: "Back <-",
-                                        callback_data: "back",
-                                    }],
-                                ],
-                                resize_keyboard: true,
-                            },
-                        })
-                        bot.on('message', () => {
-                            bot.sendMessage(chatid, 'keyingi bosqich: Manzilni kiriting', {
-                                reply_markup: {
-                                    inline_keyboard: [
-                                        [{
-                                            text: "Back <-",
-                                            callback_data: "back",
-                                        }],
-                                    ],
-                                    resize_keyboard: true,
-                                },
-                            })
-                        })
-                    })
+            case ("register"):
+                bot.sendMessage(chatid, "Royhatdan o'tganingizni tasdiqlang:", {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{
+                                text: "Tekshirish ✅",
+                                callback_data: "check",
+                            }],
+                            [{
+                                text: "Bekor qilish ❌",
+                                callback_data: "cancel",
+                            }],
+                            [{
+                                text: "Admin bilan boglanish🔗",
+                                callback_data: "toadmin",
+                            }],
+                        ],
+                        resize_keyboard: false,
+                    },
                 })
                 break;
 
-            case 'back':
-                const findWorker = await fetchData(EXISTINGWORKERID, chatid)
-                if (!findWorker.length) {
-                    bot.sendMessage(chatid, 'ok')
-                } else {
-                    const deleteWorker = await fetchData(CANCEL_WORKER, chatid)
-                    bot.sendMessage(chatid, "qayta ro'yhatdan o'tish uchun /start ga bosing")
-                }
-                break;
-
-            default:
+            case ("toadmin"):
+                bot.sendMessage(chatid, "matn kiriting, matningiz \n adminga yuboriladi:")
+                bot.on("message", t => {
+                    console.log(t.chat.username);
+                    bot.sendMessage(AdminID, `@${t.chat.username} \n \n ${t.text}`)
+                })
                 break;
         }
     } catch (error) {
@@ -178,6 +152,7 @@ export default {
     register,
     selectJob,
     showRegistration,
-    startRegister,
+    onRegister,
+    // startRegister,
     ontext
 }
